@@ -63,16 +63,16 @@ Nyzo is the first blockchain based upon the Proof-of-Diversity consensus mechani
 - Chinese: https://nyzo.me/f/20201019
 
 **Building a sustainable blockchain - what is the cycle fund?:**
-Part 1: https://tech.nyzo.co/strategy/buildingNyzo1
-Part 2: https://tech.nyzo.co/strategy/buildingNyzo2
+- Part 1: https://tech.nyzo.co/strategy/buildingNyzo1
+- Part 2: https://tech.nyzo.co/strategy/buildingNyzo2
 
 **Technical/developer stuff:**
-Release notes: https://tech.nyzo.co/releaseNotes
-Consensus establishing: https://tech.nyzo.co/consensus
-Message types: https://tech.nyzo.co/messages/messagetypes
-Data formats: https://tech.nyzo.co/dataFormats
-Preferences: https://tech.nyzo.co/scripts/preferences
-Hierarchical deterministic (HD) wallets: https://angainordev.github.io/NyzoSpace/js/dist/index.html
+- Release notes: https://tech.nyzo.co/releaseNotes
+- Consensus establishing: https://tech.nyzo.co/consensus
+- Message types: https://tech.nyzo.co/messages/messagetypes
+- Data formats: https://tech.nyzo.co/dataFormats
+- Preferences: https://tech.nyzo.co/scripts/preferences
+- Hierarchical deterministic (HD) wallets: https://angainordev.github.io/NyzoSpace/js/dist/index.html
 
 **Is there a premine? Who participated in the genesis block?:** https://tech.nyzo.co/genesisBlock
 
@@ -80,18 +80,17 @@ Hierarchical deterministic (HD) wallets: https://angainordev.github.io/NyzoSpace
 **Nyzo community fund proposals (NCFPs):** https://forum.nyzo.community/c/ncfp/5
 
 **What is the coin emission rate (inflation):**
-Equation (emission per day): https://www.desmos.com/calculator/rzukgxaabr
-Circulation: http://client.nyzo.co/circulation
-Actual rate may vary based on distributions from cycle funds, developers, etc. This is the verifier seed fund rate.
+- Equation (emission per day): https://www.desmos.com/calculator/rzukgxaabr
+- Circulation: http://client.nyzo.co/circulation
 
 **NYTRO - tokens on Nyzo:** https://nyzo.io/nytro/
-Documentation: https://github.com/Open-Nyzo/Project-Nytro/blob/main/doc/nytro_protocol.pdf
+- Documentation: https://github.com/Open-Nyzo/Project-Nytro/blob/main/doc/nytro_protocol.pdf
 
 ### Active development projects:
-https://github.com/n-y-z-o - core Nyzo verifier / @nyzo (Dev team)
-https://github.com/Open-Nyzo - Open-Nyzo / @NyZoSy @Monk
-https://github.com/ThreeDotsTech - Nyzo desktop and mobile wallets / @Moco 
-https://github.com/AngainorDev - NyzoSpace (HD wallet), projects / @Angainor
+- https://github.com/n-y-z-o - core Nyzo verifier / @nyzo (Dev team)
+- https://github.com/Open-Nyzo - Open-Nyzo / @NyZoSy @Monk
+- https://github.com/ThreeDotsTech - Nyzo desktop and mobile wallets / @Moco
+- https://github.com/AngainorDev - NyzoSpace (HD wallet), projects / @Angainor
 
 
 ### Trusted wallets
