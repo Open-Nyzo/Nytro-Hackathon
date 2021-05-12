@@ -1,6 +1,9 @@
+![Nytro Hackathon](https://user-images.githubusercontent.com/64868886/118055725-f27af280-b388-11eb-8505-aee83ea9326e.png)
+
 # [$3000-$10000 NYZO] Nytro Hackathon: Implementation of an application that uses the Nytro token protocol
 
 This is the repository that will be used to gather all the projects that were built for the Nytro Hackathon.
+
 
 ## Prize bounty
 Up to $10000 worth of Nyzo can be earned per application for this bounty, with a minimum reward of $3000 worth of Nyzo. The correct amount will be determined by a team of judges consisting of well known Nyzo community devs and mods which will evaluate based on the following evaluation criteria:
@@ -54,7 +57,7 @@ To earn this bounty you need to submit your open-source project by executing the
 3. Create a pull request into the Nytro Hackathon Github repository before the submission deadline of August 1st 2021.
 4. Join the Nyzo discord and show off your project in the [#nytro-hackathon channel](https://discord.gg/c3dxE5C6K3).
 
-*If your project is not fully finished yet, make sure you have at least a working proof-of-concept aplication that meets the minial criteria. If more work is needed to finish the project, development can always be continued after the submission deadline. Your hackathon reward will be based on the submission. A separate reward will be issued after the full implementation is delivered.*
+*If your project is not fully finished yet, make sure you have at least a working proof-of-concept application that meets the minimal criteria. If more work is needed to finish the project, development can always be continued after the submission deadline. Your hackathon reward will be based on the submission. A separate reward will be issued after the full implementation is delivered.*
 
 
 ## Reward distribution and winner announcement date
@@ -75,6 +78,7 @@ Nyzo is the first blockchain based upon the Proof-of-Diversity consensus mechani
 
 
 ### Feel free to get in touch and if you have any questions regarding Nyzo, Nytro, the hackathon bounty on the [official Nyzo Discord](https://discord.gg/c3dxE5C6K3).
+
 
 ### Design, documentation, and explanation - a collection of links
 
