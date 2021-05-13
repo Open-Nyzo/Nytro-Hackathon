@@ -1,4 +1,4 @@
-![Nytro Hackathon](https://user-images.githubusercontent.com/64868886/118055725-f27af280-b388-11eb-8505-aee83ea9326e.png)
+![Nytro Hackathon](https://user-images.githubusercontent.com/64868886/118121274-84b6e100-b3f1-11eb-851f-e7ef3e5282d3.png)
 
 # [$3000-$10000 NYZO] Nytro Hackathon: Implementation of an application that uses the Nytro token protocol
 
