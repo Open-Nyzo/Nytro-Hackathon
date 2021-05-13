@@ -80,7 +80,7 @@ Nyzo is the first blockchain based upon the Proof-of-Diversity consensus mechani
 ### Feel free to get in touch and if you have any questions regarding Nyzo, Nytro, the hackathon bounty on the [official Nyzo Discord](https://discord.gg/c3dxE5C6K3).
 
 
-### Design, documentation, and explanation - a collection of links
+## Design, documentation, and explanation - a collection of links
 
 **Nyzo version Documentation:** https://tech.nyzo.co/
 
@@ -106,6 +106,7 @@ Nyzo is the first blockchain based upon the Proof-of-Diversity consensus mechani
 **Is there a premine? Who participated in the genesis block?:** https://tech.nyzo.co/genesisBlock
 
 **Nyzo team technology proposals (NTTPs):** https://tech.nyzo.co/teamTechnologyProposals
+
 **Nyzo community fund proposals (NCFPs):** https://forum.nyzo.community/c/ncfp/5
 
 **What is the coin emission rate (inflation):**
