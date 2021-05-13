@@ -77,7 +77,7 @@ Nyzo is the first blockchain based upon the Proof-of-Diversity consensus mechani
 - Twitter: https://twitter.com/nyzo_io
 
 
-** Feel free to get in touch and if you have any questions regarding Nyzo, Nytro, the hackathon bounty on the [official Nyzo Discord](https://discord.gg/c3dxE5C6K3). **
+**Feel free to get in touch and if you have any questions regarding Nyzo, Nytro, the hackathon bounty on the [official Nyzo Discord](https://discord.gg/c3dxE5C6K3).**
 
 
 ## Design, documentation, and explanation - a collection of links
