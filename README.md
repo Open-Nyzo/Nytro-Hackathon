@@ -44,7 +44,7 @@ Helpers for Token creation: http://tokens.nyzo.today/helpers/
 
 ## How to participate
 In order to have a valid entry in the hackathon, following steps must be executed:
-1. Clone the [Nytro Hackathon Github repository](https://github.com/Open-Nyzo/Nytro-Hackathon).
+1. Fork the [Nytro Hackathon Github repository](https://github.com/Open-Nyzo/Nytro-Hackathon).
 2. Add a new .md file with a short abstract or project description.
 
 The deadline for registrations is July 4th 2021. This means that after this date, no new entrants to the hackathon will be allowed.
