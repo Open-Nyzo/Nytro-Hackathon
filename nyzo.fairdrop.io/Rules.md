@@ -2,7 +2,7 @@
 
 Example "select" rules for Fairdrop.
 
-## DB Structure
+## DB Structure
 
 The addresses table is defined by
 
@@ -23,18 +23,18 @@ Fields to be used for select are generally
 
 The other ones are exported but not used for selects.
 
-## Examples
+## Examples
 
 (showing the result of the "rule list" command)
 
-### Send 1 to in-cycles
+### Send 1 to in-cycles
 
 ```
 0 1 "in_cycle=1"
 ```
 
 
-### Send 1 to in-cycles and 1 to not in-cycle with more than 500 Nyzo
+### Send 1 to in-cycles and 1 to not in-cycle with more than 500 Nyzo
 
 ```
 0 1 "in_cycle=1"
