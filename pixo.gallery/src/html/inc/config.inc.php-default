@@ -1,0 +1,32 @@
+<?php 
+
+<?php 
+
+global $CONFIG;
+
+
+$CONFIG=array("favicon_url" => "https://pixo.gallery/favicon.ico",
+              "secret_salt" => "pixo_salt",
+              "timeout" => 60*60,
+              "default_board" => "64",
+              "boards" => array("64"));
+
+$CONFIG['sql_server'] = '127.0.0.1';
+$CONFIG['sql_database'] = 'pixo';
+$CONFIG['sql_username'] = 'root';
+$CONFIG['sql_password'] = 'password';
+
+
+global $DB;
+
+
+function DB_init() {
+    global $DB;
+    global $CONFIG;
+    $DB = new PDO('mysql:dbname=' . $CONFIG['sql_database'] . ';host=' . $CONFIG['sql_server'] . ';charset=utf8', $CONFIG['sql_username'], $CONFIG['sql_password']);
+    $DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+}
+
+DB_init();
+
+
