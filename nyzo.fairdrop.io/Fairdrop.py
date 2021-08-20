@@ -17,7 +17,7 @@ from pynyzo.clienthelpers import NyzoClient
 from pynyzo.keyutil import KeyUtil
 from requests import get
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 
 VERBOSE = False
@@ -29,7 +29,7 @@ def init_db(ctx):
         cursor.execute("CREATE TABLE IF NOT EXISTS `addresses` (`address` TEXT NOT NULL PRIMARY KEY, "
                        "`balance_nyzo` INTEGER DEFAULT 0, `in_cycle` BOOLEAN DEFAULT 0, `in_queue` INTEGER DEFAULT 0,"
                        "`drop_amount` INTEGER DEFAULT 0, `drop_rules` TEXT, `nickname` TEXT,"
-                       "`dropped_amount` INTEGER DEFAULT 0, `trx_id` TEXT)")
+                       "`dropped_amount` INTEGER DEFAULT 0, `trx_id` TEXT DEFAULT '', `height` INTEGER DEFAULT 0)")
         ctx.obj["db"].commit()
 
 
@@ -226,7 +226,7 @@ def stats(ctx):
                                  (max_balance,)).fetchone()[0]
             print(f"Rule {i}: {res} Addresses, total amount {res * amount}")
             # Execute
-            cursor.execute("UPDATE `addresses` SET `drop_amount`= ?, `drop_rules`=`drop_rules` || ?  || '+' "
+            cursor.execute("UPDATE `addresses` SET `drop_amount` = `drop_amount` + ?, `drop_rules`=`drop_rules` || ?  || '+' "
                            "WHERE `balance_nyzo`<? AND `address` NOT IN "
                            + blacklist + " AND "
                            + select,
@@ -263,10 +263,10 @@ def export(ctx):
     """Save partial db - only selected addresses - as data/fairdrop.csv"""
     with closing(ctx.obj["db"].cursor()) as cursor:
         selected = cursor.execute("SELECT address, balance_nyzo, in_cycle, in_queue, drop_rules, "
-                                  "drop_amount, dropped_amount, trx_id "
+                                  "drop_amount, dropped_amount, trx_id, height "
                                   "FROM `addresses` WHERE `drop_amount` > 0").fetchall()
         with open("data/fairdrop.csv", "w") as fp:
-            fp.write("address, balance_nyzo, in_cycle, in_queue, drop_rules, drop_amount, dropped_amount, trx_id\n")
+            fp.write("address, balance_nyzo, in_cycle, in_queue, drop_rules, drop_amount, dropped_amount, trx_id, height\n")
             for line in selected:
                 line = (str(i) for i in line)
                 fp.write(",".join(line) + "\n")
@@ -321,14 +321,22 @@ def verify(ctx):
     # check all processed drops
     errors = []
     with closing(ctx.obj["db"].cursor()) as cursor:
-        # Get all sent drops
-        to_verify = cursor.execute("SELECT address, trx_id FROM `addresses` WHERE length(trx_id) > 1  ").fetchall()
+        # Get all sent drops that are not validated already
+        to_verify = cursor.execute("SELECT address, trx_id FROM `addresses` "
+                                   "WHERE trx_id != '' AND `height` = 0").fetchall()
     for address, trx_id in to_verify:
         res = ctx.obj["client"].query_tx(trx_id)
+        height = int(res.get("height", 0))
+        print(f"Address {address} height {height}")
         # print(res)
-        if res.get("height", 0) < 1:
+        if height < 1:
             errors.append(address)
-            print(f"Unknown trx for address {address}")
+            print(f"Unknown trx {trx_id} for address {address}")
+        else:
+            with closing(ctx.obj["db"].cursor()) as cursor:
+                cursor.execute("UPDATE `addresses` SET `height` = ? WHERE trx_id = ?",
+                               (height, trx_id))
+                ctx.obj["db"].commit()
     if len(errors) > 0:
         res = input("Clear missing trx ids ? (y/N):")
         if res.lower() != 'y':

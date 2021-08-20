@@ -122,11 +122,11 @@ You can edit that rule (number 0) amount:
 `./Fairdrop.py rule amount 0 2`  
 ```
 Rules:
-0: Amount 2 - Select '`balance_nyzo` > 100000000'  
+0: Amount 2 - Select 'balance_nyzo > 100000000'  
 ```
 
 or edit that rule (number 0) select condition:  
-```./Fairdrop.py rule select 0 '`balance_nyzo` > 100000000 AND `balance_nyzo` < 200000000'```  
+```./Fairdrop.py rule select 0 'balance_nyzo > 100000000 AND balance_nyzo < 200000000'```  
   
 ```
 Rules:
@@ -140,7 +140,7 @@ You can add a rule with `rule add`
 
 ```
 Rules:
-0: Amount 1 - Select '`balance_nyzo` > 100000000'
+0: Amount 1 - Select 'balance_nyzo > 100000000'
 1: Amount 10 - Select 'in_cycle=1'
 ```
 

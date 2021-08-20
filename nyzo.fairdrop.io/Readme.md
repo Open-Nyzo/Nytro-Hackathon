@@ -62,6 +62,10 @@ Although not a totally new idea, this tool is a pre-requisite for Nyzo to be use
 
 **Drop as a service:** If you don't want to bother with the tech, we can help you or do the airdrop for you, just ask!
 
+## Changelog
+
+- v0.2: small tweaks to the db and verify procedure optimization
+
 ## Thanks
 
 - To Nyzo core devs for the awesome and fast block chain

@@ -11,9 +11,15 @@ CREATE TABLE IF NOT EXISTS `addresses`
   (`address` TEXT NOT NULL PRIMARY KEY,
    `balance_nyzo` INTEGER DEFAULT 0, `in_cycle` BOOLEAN DEFAULT 0, `in_queue` INTEGER DEFAULT 0,
    `drop_amount` INTEGER DEFAULT 0, `drop_rules` TEXT, `nickname` TEXT,
-   `dropped_amount` INTEGER DEFAULT 0, `trx_id` TEXT
+   `dropped_amount` INTEGER DEFAULT 0, `trx_id` TEXT DEFAULT '', `height` INTEGER DEFAULT 0
   )
 ```
+
+Fields list  
+```
+`address`, `balance_nyzo`, `in_cycle`, `in_queue`, `drop_amount`, `drop_rules`, `nickname`, `dropped_amount`, `trx_id`, `height` 
+```
+
 
 Fields to be used for select are generally 
 - balance_nyzo (balance in micro nyzo)
