@@ -17,7 +17,7 @@ from pynyzo.clienthelpers import NyzoClient
 from pynyzo.keyutil import KeyUtil
 from requests import get
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 
 VERBOSE = False
@@ -131,26 +131,30 @@ def send_batch(ctx, privkey, token, decimals, to_send, frozen):
         data = f"TT:{token}:{amount_str}"
         data = data[:32]
         # print(data)
-        res = ctx.obj["client"].send(recipient, 0.000001, data, privkey, frozen)
-        # res= {}
-        # print(res)
-        if str(res.get("forwarded", "false")).lower() == "false":
-            print(f"! Not forwarded: {recipient}: {amount}")
-            print(res)
-        else:
-            last_height = res.get('block height', last_height)
-            trx_id = res['tx__']
-            print(f"Forwarded: {recipient}: {amount}\n trx {trx_id}")
-            try:
-                with closing(ctx.obj["db"].cursor()) as cursor:
-                    # Reset results
-                    cursor.execute("UPDATE `addresses` SET `dropped_amount` = ?, `trx_id` = ? WHERE address = ?",
-                                   (amount, trx_id, recipient))
-                    ctx.obj["db"].commit()
-            except Exception as e:
-                print(f"Error saving db: {e}")
+        try:
+            res = ctx.obj["client"].send(recipient, 0.000001, data, privkey, frozen)
+            # res= {}
+            # print(res)
+            if str(res.get("forwarded", "false")).lower() == "false":
+                print(f"! Not forwarded: {recipient}: {amount}")
+                print(res)
+            else:
+                last_height = res.get('block height', last_height)
+                trx_id = res['tx__']
+                print(f"Forwarded: {recipient}: {amount}\n trx {trx_id}")
+                try:
+                    with closing(ctx.obj["db"].cursor()) as cursor:
+                        # Reset results
+                        cursor.execute("UPDATE `addresses` SET `dropped_amount` = ?, `trx_id` = ? WHERE address = ?",
+                                       (amount, trx_id, recipient))
+                        ctx.obj["db"].commit()
+                except Exception as e:
+                    print(f"Error saving db: {e}")
+        except Exception as e:
+            print(f"Error client: {e} - Sleep 15")
+            sleep(15)
     print(f"Batch Done, check height {last_height}")
-    return last_height
+    return int(last_height)
 
 
 @click.group()
@@ -163,7 +167,7 @@ def cli(ctx, verbose):
     VERBOSE = verbose
     if VERBOSE:
         print("Verbose Mode")
-    ctx.obj["client"] = NyzoClient()
+    ctx.obj["client"] = NyzoClient()  # Todo: add command line switch or var to override default.
     ctx.obj["db"] = sqlite3.connect("data/fairdrop.db")
     init_db(ctx)
     # Sender: Address to send with (owner of the token to drop)
@@ -174,7 +178,7 @@ def cli(ctx, verbose):
     # KnownAddresses: known addresses, in base
     # Batch: batch size for sending. 50 recommended until further tests.
     ctx.obj['status'] = {"Sender": "", "Token": "", "Decimals": 0, "State": "Init", "MaxBalance": 500000 * 1000000,
-                         "Batch": 50}
+                         "Batch": 5}
     update_status(ctx)
     ctx.obj['rules'] = [[1, "`balance_nyzo` > 100000000"]]  # Default rule if empty - 1 to everyone above 100n
     if path.isfile("data/rules.json"):
@@ -255,6 +259,14 @@ def stats(ctx):
         res = cursor.execute("SELECT COUNT(*) FROM `addresses` WHERE `dropped_amount`>0 ").fetchone()[0]
         print(f"{res} Total dropped transactions")
         ctx.invoke(set, key='STATS_TotalDroppedTrx', value=res)
+        # Total verified transactions
+        res = cursor.execute("SELECT COUNT(*) FROM `addresses` WHERE `dropped_amount`>0 and `height` > 0").fetchone()[0]
+        print(f"{res} Total dropped and verified transactions")
+        ctx.invoke(set, key='STATS_TotalVerifiedTrx', value=res)
+        # Total verification errors (need recheck)
+        res = cursor.execute("SELECT COUNT(*) FROM `addresses` WHERE `dropped_amount`>0 and `height` < 0").fetchone()[0]
+        print(f"{res} Total verification errors - Rerun 'verify'")
+        ctx.invoke(set, key='STATS_TotalErrorVerification', value=res)
 
 
 @cli.command()
@@ -293,20 +305,21 @@ def send(ctx, privkey: str=''):
         return
     to_send = [('', 0)]  # Try once
     frozen = ctx.obj["client"].get_frozen()
-    check_height = frozen["height"] + 10
+    check_height = int(frozen["height"]) + 10
     while len(to_send) > 0:
         # Try to send a batch
         print("Do not interrupt until further notice...")
         with closing(ctx.obj["db"].cursor()) as cursor:
             # Get a random batch of "Batch" len to send
             to_send = cursor.execute("SELECT address, drop_amount "
-                                     "FROM `addresses` WHERE `drop_amount` > 0 AND `dropped_amount`=0 "
-                                     "ORDER BY RANDOM() LIMIT ?", (ctx.obj['status']['Batch'],)).fetchall()
+                                     "FROM `addresses` WHERE `drop_amount` > 0 AND `dropped_amount`=0 AND trx_id = '' "
+                                     "AND address != ? "  # Do not send to ourselves!
+                                     "ORDER BY RANDOM() LIMIT ?", (address, ctx.obj['status']['Batch'])).fetchall()
         if len(to_send) > 0:
             # Safe send it-. Do not interrupt while doing it
             check_height = max(check_height, send_batch(ctx, privkey, ctx.obj['status']['Token'], ctx.obj['status']['Decimals'], to_send, frozen))
-        print("Batch sent. You have 5 sec to safely interrupt.")
-        sleep(5)
+        print("Batch sent. You have 3 sec to safely interrupt.")
+        sleep(3)
     print("Drop done.")
     print("Use 'export' to save the csv report.")
     ctx.invoke(set, key='CheckHeight', value=check_height)
@@ -318,34 +331,68 @@ def verify(ctx):
     """Makes sure all sent tx have gone through. Clears tx after user confirm when not."""
     # Make sure we are past the check height
 
-    # check all processed drops
     errors = []
+    # first of all, retry all potentially previously failed verify checks
+    with closing(ctx.obj["db"].cursor()) as cursor:
+        # Get all sent drops that are not validated already
+        to_verify = cursor.execute("SELECT address, trx_id FROM `addresses` "
+                                   "WHERE trx_id != '' AND `height` = -1").fetchall()
+    for address, trx_id in to_verify:
+        try:
+            res = ctx.obj["client"].query_tx(trx_id)
+            height = int(res.get("height", 0))
+            print(f"Address {address} height {height} (retry)")
+            # print(res)
+            if height < 1:
+                # errors.append(address)
+                print(f"Unknown trx {trx_id} for address {address} (retry)")
+            with closing(ctx.obj["db"].cursor()) as cursor:
+                cursor.execute("UPDATE `addresses` SET `height` = ? WHERE trx_id = ?",
+                               (height, trx_id))
+                ctx.obj["db"].commit()
+            sleep(0.5)  # Be nice to client
+        except Exception as e:
+            print(e)
+            sleep(10)
+    # check all processed drops with unknown height still
     with closing(ctx.obj["db"].cursor()) as cursor:
         # Get all sent drops that are not validated already
         to_verify = cursor.execute("SELECT address, trx_id FROM `addresses` "
                                    "WHERE trx_id != '' AND `height` = 0").fetchall()
     for address, trx_id in to_verify:
-        res = ctx.obj["client"].query_tx(trx_id)
-        height = int(res.get("height", 0))
-        print(f"Address {address} height {height}")
-        # print(res)
-        if height < 1:
-            errors.append(address)
-            print(f"Unknown trx {trx_id} for address {address}")
-        else:
+        try:
+            res = ctx.obj["client"].query_tx(trx_id)
+            height = int(res.get("height", 0))
+            print(f"Address {address} height {height}")
+            # print(res)
+            if height < 1:
+                errors.append(address)
+                print(f"Unknown trx {trx_id} for address {address}")
+            else:
+                with closing(ctx.obj["db"].cursor()) as cursor:
+                    cursor.execute("UPDATE `addresses` SET `height` = ? WHERE trx_id = ?",
+                                   (height, trx_id))
+                    ctx.obj["db"].commit()
+            sleep(0.5)  # Be nice to client
+        except Exception as e:
+            print(e)
+            # Set height to -1 so we now the difference between height 0 (checked, not there) and -1 (checked, error)
             with closing(ctx.obj["db"].cursor()) as cursor:
-                cursor.execute("UPDATE `addresses` SET `height` = ? WHERE trx_id = ?",
-                               (height, trx_id))
+                cursor.execute("UPDATE `addresses` SET `height` = -1 WHERE trx_id = ?",
+                               (trx_id,))
                 ctx.obj["db"].commit()
+            sleep(10)
+
     if len(errors) > 0:
-        res = input("Clear missing trx ids ? (y/N):")
+        res = input("Clear checked and missing trx ids ? (y/N):")
         if res.lower() != 'y':
             print("Aborted")
             return
         else:
             with closing(ctx.obj["db"].cursor()) as cursor:
                 for address in errors:
-                    cursor.execute("UPDATE `addresses` SET trx_id='', dropped_amount=0 WHERE address= ? ", (address,))
+                    cursor.execute("UPDATE `addresses` SET trx_id='', dropped_amount=0 WHERE address= ? AND height=0",
+                                   (address,))
                 ctx.obj["db"].commit()
             print("Cleared")
 

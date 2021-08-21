@@ -66,7 +66,7 @@ Token:
 Decimals: 0
 State: Init
 MaxBalance: 500000000000
-Batch: 50
+Batch: 5
 KnownAddresses: 0
 status: 
 Rules:
@@ -92,7 +92,8 @@ You can redo a status thereafter to check. These settings are saved in the sqlit
 ### 1.2 Other vars
 
 You can also set:
-- Batch (number of transactions to send in a single batch. Max 50)
+- Batch (number of transactions to send in a single batch. Max 50)  
+  5 will take more time, but is nicer to the nyzo client you'll use, client.nyzo.co by default.
 - MaxBalance (in micro nyzos. Addresses with balance above that will be excluded)
 
 ## 2. Snapshot
